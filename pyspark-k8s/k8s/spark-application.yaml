@@ -1,0 +1,32 @@
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: pyspark-demo
+  namespace: default
+spec:
+  type: Python
+  mode: cluster
+
+  image: pyspark-demo:latest
+  imagePullPolicy: IfNotPresent
+
+  mainApplicationFile: local:///app/job.py
+  sparkVersion: "3.5.0"
+
+  restartPolicy:
+    type: Never
+
+  # Optional but helpful: if your image sets/uses a venv python
+  sparkConf:
+    "spark.pyspark.python": "/opt/venv/bin/python"
+    "spark.pyspark.driver.python": "/opt/venv/bin/python"
+
+  driver:
+    cores: 1
+    memory: "512m"
+    serviceAccount: spark-sa
+
+  executor:
+    cores: 1
+    instances: 2
+    memory: "1g"
