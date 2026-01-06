@@ -1,17 +1,12 @@
-FROM eclipse-temurin:17-jre
+FROM spark:3.5.0-scala2.12-java17-python3-ubuntu
 
-ENV VENV=/opt/venv
-ENV PATH="$VENV/bin:$PATH"
-ENV PYSPARK_PYTHON="$VENV/bin/python"
+USER root
+WORKDIR /opt/spark/work-dir
 
-RUN apt-get update && \
-    apt-get install -y python3 python3-venv python3-pip && \
-    rm -rf /var/lib/apt/lists/*
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt && rm -f /tmp/requirements.txt
 
-# Create venv and install Python deps into it
-RUN python3 -m venv $VENV && \
-    $VENV/bin/pip install --upgrade pip && \
-    $VENV/bin/pip install pyspark==3.5.0 "numpy<2" "pandas>=2.1.0"
+COPY app/ /app
+RUN chown -R spark:spark /app
 
-WORKDIR /app
-COPY app/job.py /app/job.py
+USER spark

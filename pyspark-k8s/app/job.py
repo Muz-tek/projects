@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 
 
 print("=== JOB START ===", flush=True)
+
 spark = (
     SparkSession.builder
     .appName("pyspark-k8s-demo")

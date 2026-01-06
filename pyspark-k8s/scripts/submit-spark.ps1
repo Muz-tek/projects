@@ -34,6 +34,12 @@ if (-not $driver) {
   exit 1
 }
 
-Write-Host "Driver pod: $driver"
-Write-Host "Streaming logs..."
-kubectl logs -f -n $Ns $driver
+# stream logs to terminal and file
+$logDir = "logs"
+New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+$ts = Get-Date -Format "yyyyMMdd-HHmmss"
+$logFile = Join-Path $logDir "$Name-driver-$ts.log"
+
+Write-Host "Streaming logs to screen and: $logFile"
+kubectl logs -f -n $Ns $driver | Tee-Object -FilePath $logFile
+
